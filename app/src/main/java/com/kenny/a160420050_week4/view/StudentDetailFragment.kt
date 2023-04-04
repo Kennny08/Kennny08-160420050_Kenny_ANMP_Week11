@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.lifecycle.Observer
@@ -13,8 +14,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import com.kenny.a160420050_week4.R
+import com.kenny.a160420050_week4.util.loadImage
 import com.kenny.a160420050_week4.viewmodel.DetailViewModel
 import com.kenny.a160420050_week4.viewmodel.ListViewModel
+import kotlinx.android.synthetic.main.student_list_item.*
 
 
 class StudentDetailFragment : Fragment() {
@@ -34,7 +37,12 @@ class StudentDetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel = ViewModelProvider(this).get(DetailViewModel::class.java)
-        viewModel.fetch()
+        if(arguments != null) {
+            val studentId =
+                StudentDetailFragmentArgs.fromBundle(requireArguments()).studentId
+            viewModel.fetch(studentId)
+        }
+
 
         observeViewModel(view)
     }
@@ -44,12 +52,15 @@ class StudentDetailFragment : Fragment() {
         val txtID = view.findViewById<TextInputEditText>(R.id.txtID)
         val txtBod = view.findViewById<TextInputEditText>(R.id.txtBod)
         val txtPhone = view.findViewById<TextInputEditText>(R.id.txtPhone)
+        val imgViewDetailStudent = view.findViewById<ImageView>(R.id.imgViewDetailStudent)
+        val progressBarDetailStudent = view.findViewById<ProgressBar>(R.id.progressBarDetailStudent)
 
         viewModel.studentLD.observe(viewLifecycleOwner, Observer {
             txtID.setText(it.id)
             txtName.setText(it.name)
             txtBod.setText(it.dob)
             txtPhone.setText(it.phone)
+            imgViewDetailStudent.loadImage(it.photoUrl, progressBarDetailStudent)
         })
     }
 
